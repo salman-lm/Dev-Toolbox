@@ -1,0 +1,5 @@
+{
+  "name": "Dev Toolbox",
+  "description": "A versatile toolbox for developers and creators, offering a suite of client-side utilities including a random password generator, an instant image editor, an image resolution changer, and a text analysis tool. All tools work offline without backend processing.",
+  "requestFramePermissions": []
+}
