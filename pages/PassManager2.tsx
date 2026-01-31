@@ -1,126 +1,171 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import BackButton from '../components/BackButton';
 
-type Complexity = 'low' | 'medium' | 'high';
+type Strength = 'low' | 'medium' | 'high';
+const lengths = [10, 15, 20, 30, 35];
+const strengths: Strength[] = ['low', 'medium', 'high'];
 
-interface PassManager2Props {
-    onBack: () => void;
-}
+const PassManager2: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+    const [selectedLength, setSelectedLength] = useState<number>(10);
+    const [selectedStrength, setSelectedStrength] = useState<Strength>('low');
+    const [password, setPassword] = useState('');
+    const [showResult, setShowResult] = useState(false);
+    const [copied, setCopied] = useState(false);
 
-const PassManager2: React.FC<PassManager2Props> = ({ onBack }) => {
-    const [length, setLength] = useState<number>(12);
-    const [complexity, setComplexity] = useState<Complexity>('low');
-    const [passwords, setPasswords] = useState<string[]>([]);
-    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+    const generatePassword = useCallback((length: number, strength: Strength) => {
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-    const generatePasswords = useCallback(() => {
-        const charSets = {
-            low: 'abcdefghijklmnopqrstuvwxyz',
-            medium: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-            high: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
-        };
-
-        const chars = charSets[complexity];
-        const newPasswords: string[] = [];
-        for (let i = 0; i < 10; i++) {
-            let password = '';
-            for (let j = 0; j < length; j++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            newPasswords.push(password);
+        let chars = lowercase;
+        if (strength === 'medium') {
+            chars += uppercase + numbers;
+        } else if (strength === 'high') {
+            chars += uppercase + numbers + symbols;
         }
-        setPasswords(newPasswords);
-        setCopiedIndex(null); // Reset copied state on new generation
-    }, [length, complexity]);
 
-    useEffect(() => {
-        generatePasswords();
-    }, []); // Generate passwords on initial load
+        let newPassword = '';
+        for (let i = 0; i < length; i++) {
+            newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return newPassword;
+    }, []);
 
-    const handleCopy = (password: string, index: number) => {
+    const handleGenerate = () => {
+        const newPassword = generatePassword(selectedLength, selectedStrength);
+        setPassword(newPassword);
+        setShowResult(true);
+        setCopied(false);
+    };
+
+    const handleCopy = () => {
         navigator.clipboard.writeText(password).then(() => {
-            setCopiedIndex(index);
-            setTimeout(() => {
-                setCopiedIndex(null);
-            }, 2000);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         });
     };
     
-    const handleLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.valueAsNumber;
-        if (isNaN(value)) {
-            setLength(6);
-            return;
+    const getStrengthBarClasses = (barIndex: number): string => {
+        let classes = 'strength-bar';
+        if (!showResult) return classes;
+
+        switch (selectedStrength) {
+            case 'low':
+                if (barIndex === 0) classes += ' active low';
+                break;
+            case 'medium':
+                if (barIndex <= 2) classes += ' active medium';
+                break;
+            case 'high':
+                classes += ' active high';
+                break;
         }
-        setLength(Math.max(6, Math.min(30, value)));
+        return classes;
     };
 
-    return (
-        <div className="container mx-auto px-4 py-12 flex flex-col items-center">
-            <div className="w-full max-w-4xl">
-                <BackButton onBack={onBack} />
-            </div>
-            <div className="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-2xl">
-                <h1 className="text-3xl font-bold text-center mb-6 text-yellow-400">Secure Password Generator</h1>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
-                    <div className="flex flex-col items-start w-full sm:w-1/2">
-                        <label htmlFor="char-limit" className="text-lg font-medium mb-2 text-gray-400">Character Limit</label>
-                        <input 
-                            type="number" 
-                            id="char-limit" 
-                            value={length} 
-                            min="6" 
-                            max="30"
-                            onChange={handleLengthChange}
-                            className="w-full bg-gray-700 text-gray-100 px-4 py-2 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        />
-                    </div>
 
-                    <div className="flex flex-col items-start w-full sm:w-1/2">
-                        <p className="text-lg font-medium mb-2 text-gray-400">Complexity</p>
-                        <div className="flex gap-4">
-                            {(['low', 'medium', 'high'] as Complexity[]).map(level => (
-                                <label key={level} className="inline-flex items-center">
-                                    <input 
-                                        type="radio" 
-                                        name="complexity" 
-                                        value={level} 
-                                        checked={complexity === level}
-                                        onChange={() => setComplexity(level)}
-                                        className="form-radio text-yellow-500 focus:ring-yellow-500 bg-gray-700 border-gray-600"
-                                    />
-                                    <span className="ml-2 text-gray-300 capitalize">{level}</span>
-                                </label>
+    const pageStyles = `
+        .pm2-body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .pm2-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            color: #333;
+        }
+        .pm2-container h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .pm2-subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 0.9rem; }
+        .pm2-section { margin-bottom: 25px; }
+        .pm2-section-title { color: #333; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pm2-button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .pm2-option-btn { flex: 1; min-width: 70px; padding: 12px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; font-weight: 500; color: #666; }
+        .pm2-option-btn:hover { border-color: #667eea; color: #667eea; transform: translateY(-2px); }
+        .pm2-option-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .pm2-generate-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .pm2-generate-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .pm2-generate-btn:active { transform: translateY(-1px); }
+        .pm2-result-container { margin-top: 30px; display: none; }
+        .pm2-result-container.show { display: block; animation: pm2-slideIn 0.4s ease; }
+        @keyframes pm2-slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .pm2-password-display { background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .pm2-password-text { flex: 1; font-family: 'Courier New', monospace; font-size: 1.1rem; color: #333; word-break: break-all; font-weight: 600; }
+        .pm2-copy-btn { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; white-space: nowrap; }
+        .pm2-copy-btn:hover { background: #5568d3; transform: scale(1.05); }
+        .pm2-copy-btn.copied { background: #10b981; }
+        .pm2-strength-indicator { display: flex; gap: 5px; margin-top: 10px; }
+        .strength-bar { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; transition: all 0.3s ease; }
+        .strength-bar.active.low { background: #ef4444; }
+        .strength-bar.active.medium { background: #f59e0b; }
+        .strength-bar.active.high { background: #10b981; }
+        @media (max-width: 480px) { .pm2-container { padding: 25px; } h1 { font-size: 1.5rem; } .pm2-option-btn { min-width: 60px; padding: 10px 15px; font-size: 0.85rem; } }
+    `;
+
+    return (
+        <>
+            <style>{pageStyles}</style>
+            <div className="pm2-body">
+                 <div className="absolute top-0 left-0 p-4">
+                     <BackButton onBack={onBack} />
+                 </div>
+                <div className="pm2-container">
+                    <h1>🔐 Password Generator</h1>
+                    <p className="pm2-subtitle">Create strong, secure passwords instantly</p>
+
+                    <div className="pm2-section">
+                        <div className="pm2-section-title">Password Length</div>
+                        <div className="pm2-button-group">
+                            {lengths.map(len => (
+                                <button key={len} onClick={() => setSelectedLength(len)} className={`pm2-option-btn ${selectedLength === len ? 'active' : ''}`}>
+                                    {len}
+                                </button>
                             ))}
                         </div>
                     </div>
-                </div>
 
-                <button 
-                    id="generate-btn"
-                    onClick={generatePasswords}
-                    className="w-full bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-yellow-600 transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
-                    Generate 10 Passwords
-                </button>
+                    <div className="pm2-section">
+                        <div className="pm2-section-title">Strength Level</div>
+                        <div className="pm2-button-group">
+                            {strengths.map(str => (
+                               <button key={str} onClick={() => setSelectedStrength(str)} className={`pm2-option-btn capitalize ${selectedStrength === str ? 'active' : ''}`}>
+                                    {str}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                <div id="password-list" className="mt-8 space-y-4">
-                    {passwords.map((password, index) => (
-                        <div key={index} className="flex items-center bg-gray-700 rounded-lg p-3 shadow-md">
-                            <span className="flex-grow text-yellow-300 font-mono break-all">{password}</span>
-                            <button 
-                                onClick={() => handleCopy(password, index)}
-                                className="ml-4 bg-gray-500 text-gray-900 font-bold text-sm py-1 px-3 rounded-lg hover:bg-gray-400 transition-colors duration-300"
-                                disabled={copiedIndex === index}
-                            >
-                                {copiedIndex === index ? 'Copied!' : 'Copy'}
+                    <button className="pm2-generate-btn" onClick={handleGenerate}>Generate Password</button>
+
+                    <div className={`pm2-result-container ${showResult ? 'show' : ''}`}>
+                        <div className="pm2-password-display">
+                            <div className="pm2-password-text">{password}</div>
+                            <button onClick={handleCopy} className={`pm2-copy-btn ${copied ? 'copied' : ''}`}>
+                                {copied ? 'Copied!' : 'Copy'}
                             </button>
                         </div>
-                    ))}
+                        <div className="pm2-strength-indicator">
+                            {[0, 1, 2, 3].map(i => <div key={i} className={getStrengthBarClasses(i)}></div>)}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
