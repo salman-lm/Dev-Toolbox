@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import BackButton from '../components/BackButton';
 
 type Strength = 'low' | 'medium' | 'high';
@@ -10,17 +10,10 @@ interface PasswordGeneratorProps {
 
 const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
   const [length, setLength] = useState<number>(16);
-  const [lengthInput, setLengthInput] = useState<string>('16');
   const [strength, setStrength] = useState<Strength>('medium');
   const [passwords, setPasswords] = useState<string[]>([]);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Syncs the text input if the master 'length' state changes (e.g., from the slider)
-    if (parseInt(lengthInput, 10) !== length) {
-      setLengthInput(String(length));
-    }
-  }, [length, lengthInput]);
+  const availableLengths = Array.from({ length: 40 - 15 + 1 }, (_, i) => 15 + i);
 
   const generatePasswords = useCallback(() => {
     const charSets = {
@@ -44,7 +37,7 @@ const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
     }
 
     const newPasswords: string[] = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       let password = '';
       for (let j = 0; j < length; j++) {
         password += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -52,36 +45,13 @@ const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
       newPasswords.push(password);
     }
     setPasswords(newPasswords);
-    setCopiedIndex(null);
   }, [length, strength]);
 
   const handleCopy = (password: string, index: number) => {
     navigator.clipboard.writeText(password);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
+    setPasswords(prevPasswords => prevPasswords.filter((_, i) => i !== index));
   };
   
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLength(e.target.valueAsNumber);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setLengthInput(value);
-    const numValue = parseInt(value, 10);
-    if (!isNaN(numValue) && numValue >= 8 && numValue <= 64) {
-      setLength(numValue);
-    }
-  };
-
-  const handleInputBlur = () => {
-    const numValue = parseInt(lengthInput, 10);
-    const clampedLength = Math.max(8, Math.min(64, isNaN(numValue) ? 8 : numValue));
-    setLength(clampedLength);
-    setLengthInput(String(clampedLength));
-  };
-
-
   return (
     <div className="container mx-auto px-4 py-12">
       <BackButton onBack={onBack} />
@@ -91,27 +61,22 @@ const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
         {/* Controls */}
         <div className="md:col-span-1 space-y-6">
           <div>
-            <label htmlFor="length-slider" className="block text-sm font-medium text-gray-300 mb-2">Password Length: <span className="font-bold text-primary">{length}</span></label>
-            <div className="flex items-center space-x-4">
-                <input
-                    id="length-slider"
-                    type="range"
-                    min="8"
-                    max="64"
-                    value={length}
-                    onChange={handleSliderChange}
-                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
-                />
-                <input
-                    type="number"
-                    min="0"
-                    max="64"
-                    value={lengthInput}
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
-                    className="bg-gray-900 text-white w-20 p-2 text-center rounded-md border border-gray-600 focus:ring-primary focus:border-primary"
-                    aria-label="Password length"
-                />
+            <label className="block text-sm font-medium text-gray-300 mb-3">Password Length: <span className="font-bold text-primary">{length}</span></label>
+            <div className="flex flex-wrap gap-2">
+              {availableLengths.map(len => (
+                <button
+                  key={len}
+                  onClick={() => setLength(len)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 text-sm font-semibold ${
+                    length === len
+                      ? 'bg-primary text-white scale-110 shadow-lg'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                  }`}
+                  aria-pressed={length === len}
+                >
+                  {len}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -147,7 +112,7 @@ const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
                 <div key={i} className="flex items-center justify-between bg-gray-800 p-3 rounded-md">
                   <span className="font-mono text-gray-300 break-all">{p}</span>
                   <button onClick={() => handleCopy(p, i)} className="text-sm font-semibold text-primary hover:underline ml-4 whitespace-nowrap">
-                    {copiedIndex === i ? 'Copied!' : 'Copy'}
+                    Copy
                   </button>
                 </div>
               ))}
