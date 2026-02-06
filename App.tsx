@@ -8,6 +8,7 @@ import TextCounter from './pages/TextCounter';
 import ImageCropper from './pages/ImageCropper';
 import ImageToMotion from './pages/ImageToMotion';
 import PassManager2 from './pages/PassManager2';
+import ImageSizeChanger from './pages/ImageSizeChanger';
 
 const App: React.FC = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -32,6 +33,8 @@ const App: React.FC = () => {
         return <ImageCropper onBack={handleGoHome} />;
       case 'image-to-motion':
         return <ImageToMotion onBack={handleGoHome} />;
+      case 'image-size-changer':
+        return <ImageSizeChanger onBack={handleGoHome} />;
       default:
         return <HomePage onSelectTool={setActiveTool} />;
     }

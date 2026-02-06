@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Tool } from '../types';
 import ToolCard from '../components/ToolCard';
-import { LockIcon, MagicWandIcon, AspectRatioIcon, TextIcon, CropIcon, FilmIcon } from '../components/icons';
+import { LockIcon, MagicWandIcon, AspectRatioIcon, TextIcon, CropIcon, FilmIcon, CompressIcon } from '../components/icons';
 
 const tools: Tool[] = [
   {
@@ -40,12 +40,19 @@ const tools: Tool[] = [
     description: 'Crop images to popular aspect ratios. Select a region and download the high-quality cropped output.',
     icon: <CropIcon />,
   },
-    {
+  {
     id: 'image-to-motion',
     path: '/image-to-motion',
     title: 'Image to Motion',
     description: 'Apply simple motion effects like floating or pulsing to your static images and see them come to life.',
     icon: <FilmIcon />,
+  },
+  {
+    id: 'image-size-changer',
+    path: '/image-size-changer',
+    title: 'Image Size Changer',
+    description: 'Compress images to a specific file size (KB/MB) with the best possible quality. Ideal for web uploads.',
+    icon: <CompressIcon />,
   },
   {
     id: 'text-counter',

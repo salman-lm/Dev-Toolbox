@@ -20,23 +20,56 @@ interface ImageToMotionProps {
 
 const ImageToMotion: React.FC<ImageToMotionProps> = ({ onBack }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [effect, setEffect] = useState<MotionEffect>('float');
   const [duration, setDuration] = useState<number>(5);
   const [isExporting, setIsExporting] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
+  const processImageFile = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                imageRef.current = img;
+                setImageSrc(event.target?.result as string);
+            };
+            img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          imageRef.current = img;
-          setImageSrc(event.target?.result as string);
-        }
-        img.src = event.target?.result as string;
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      processImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processImageFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -131,17 +164,24 @@ const ImageToMotion: React.FC<ImageToMotionProps> = ({ onBack }) => {
       <h1 className="text-4xl font-bold mb-8 text-white">Image to Motion</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-gray-900/50 backdrop-blur-sm p-4 rounded-lg flex items-center justify-center min-h-[60vh] overflow-hidden">
+        <div 
+            className={`lg:col-span-2 bg-gray-900/50 backdrop-blur-sm p-4 rounded-lg flex items-center justify-center min-h-[60vh] overflow-hidden transition-colors duration-300 ${isDraggingOver ? 'bg-gray-700 border-2 border-dashed border-primary' : 'border-2 border-transparent'}`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+        >
           {imageSrc ? (
             <img 
               src={imageSrc} 
               alt="Motion Preview" 
-              className="max-w-full max-h-[70vh] object-contain rounded-md"
+              className="max-w-full max-h-[70vh] object-contain rounded-md pointer-events-none"
               style={animationStyle}
             />
           ) : (
-            <div className="text-center text-gray-500">
-              <label className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-300 cursor-pointer">
+            <div className="text-center text-gray-500 pointer-events-none">
+              <p className="mb-4">Drag & drop an image here, or</p>
+              <label className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-300 cursor-pointer pointer-events-auto">
                 Choose Image
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
               </label>

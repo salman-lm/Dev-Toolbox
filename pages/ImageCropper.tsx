@@ -38,20 +38,53 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onBack }) => {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  const processImageFile = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+        setCrop(undefined); // Makes crop preview update between images.
+        const reader = new FileReader();
+        reader.addEventListener('load', () =>
+            setImgSrc(reader.result?.toString() || ''),
+        );
+        reader.readAsDataURL(file);
+    }
+  };
+
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
-      setCrop(undefined); // Makes crop preview update between images.
-      const reader = new FileReader();
-      reader.addEventListener('load', () =>
-        setImgSrc(reader.result?.toString() || ''),
-      );
-      reader.readAsDataURL(e.target.files[0]);
+      processImageFile(e.target.files[0]);
     }
   }
+  
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processImageFile(e.dataTransfer.files[0]);
+    }
+  };
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -125,7 +158,13 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onBack }) => {
       <h1 className="text-4xl font-bold mb-8 text-white">Image Cropper</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-gray-800 p-4 rounded-lg flex items-center justify-center min-h-[60vh]">
+        <div 
+            className={`lg:col-span-2 bg-gray-800 p-4 rounded-lg flex items-center justify-center min-h-[60vh] transition-colors duration-300 ${isDraggingOver ? 'bg-gray-700 border-2 border-dashed border-primary' : 'border-2 border-transparent'}`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+        >
           {imgSrc ? (
             <ReactCrop
               crop={crop}
@@ -142,8 +181,9 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onBack }) => {
               />
             </ReactCrop>
           ) : (
-             <div className="text-center text-gray-500">
-                <label className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-300 cursor-pointer">
+             <div className="text-center text-gray-500 pointer-events-none">
+                <p className="mb-4">Drag & drop an image here, or</p>
+                <label className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-300 cursor-pointer pointer-events-auto">
                     Choose Image
                     <input type="file" accept="image/*" onChange={onSelectFile} className="hidden" />
                 </label>

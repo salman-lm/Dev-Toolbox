@@ -44,3 +44,9 @@ export const FilmIcon: React.FC<{ className?: string }> = ({ className }) => (
         <path d="M7 3v18M17 3v18M3 12h18M3 7h4M3 17h4M17 7h4M17 17h4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 );
+
+export const CompressIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1v4m0 0h-4m4 0l-5-5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5 5" />
+  </svg>
+);
