@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PasswordGenerator from './pages/PasswordGenerator';
 import ImageEditor from './pages/ImageEditor';
@@ -9,41 +10,26 @@ import ImageCropper from './pages/ImageCropper';
 import ImageToMotion from './pages/ImageToMotion';
 import PassManager2 from './pages/PassManager2';
 import ImageSizeChanger from './pages/ImageSizeChanger';
+import YoutubeSeoGenerator from './pages/YoutubeSeoGenerator';
 
 const App: React.FC = () => {
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-
-  const handleGoHome = () => {
-    setActiveTool(null);
-  };
-
-  const renderTool = () => {
-    switch (activeTool) {
-      case 'password-generator':
-        return <PasswordGenerator onBack={handleGoHome} />;
-      case 'pass-manager-2':
-        return <PassManager2 onBack={handleGoHome} />;
-      case 'image-editor':
-        return <ImageEditor onBack={handleGoHome} />;
-      case 'resolution-changer':
-        return <ResolutionChanger onBack={handleGoHome} />;
-      case 'text-counter':
-        return <TextCounter onBack={handleGoHome} />;
-      case 'image-cropper':
-        return <ImageCropper onBack={handleGoHome} />;
-      case 'image-to-motion':
-        return <ImageToMotion onBack={handleGoHome} />;
-      case 'image-size-changer':
-        return <ImageSizeChanger onBack={handleGoHome} />;
-      default:
-        return <HomePage onSelectTool={setActiveTool} />;
-    }
-  };
-
   return (
-    <div className="min-h-screen">
-      {renderTool()}
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/password-generator" element={<PasswordGenerator />} />
+          <Route path="/pass-manager-2" element={<PassManager2 />} />
+          <Route path="/image-editor" element={<ImageEditor />} />
+          <Route path="/resolution-changer" element={<ResolutionChanger />} />
+          <Route path="/text-counter" element={<TextCounter />} />
+          <Route path="/image-cropper" element={<ImageCropper />} />
+          <Route path="/image-to-motion" element={<ImageToMotion />} />
+          <Route path="/image-size-changer" element={<ImageSizeChanger />} />
+          <Route path="/youtube-seo" element={<YoutubeSeoGenerator />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 };
 

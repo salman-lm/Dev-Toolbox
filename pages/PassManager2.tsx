@@ -6,7 +6,7 @@ type Strength = 'low' | 'medium' | 'high';
 const lengths = [10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
 const strengths: Strength[] = ['low', 'medium', 'high'];
 
-const PassManager2: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const PassManager2: React.FC = () => {
     const [selectedLength, setSelectedLength] = useState<number>(10);
     const [selectedStrength, setSelectedStrength] = useState<Strength>('low');
     const [password, setPassword] = useState('');
@@ -122,7 +122,7 @@ const PassManager2: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <style>{pageStyles}</style>
             <div className="pm2-body">
                  <div className="absolute top-0 left-0 p-4">
-                     <BackButton onBack={onBack} />
+                     <BackButton />
                  </div>
                 <div className="pm2-container">
                     <h1>🔐 Password Generator</h1>

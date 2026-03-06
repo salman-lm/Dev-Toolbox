@@ -67,7 +67,7 @@ async function compressImage(
 }
 
 
-const ImageSizeChanger: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const ImageSizeChanger: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [originalInfo, setOriginalInfo] = useState<OriginalImageInfo | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -154,7 +154,7 @@ const ImageSizeChanger: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-8 text-white">Image Size Changer (MB to KB)</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

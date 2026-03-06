@@ -29,11 +29,7 @@ function useDebounceEffect(
   }, deps);
 }
 
-interface ImageCropperProps {
-    onBack: () => void;
-}
-
-const ImageCropper: React.FC<ImageCropperProps> = ({ onBack }) => {
+const ImageCropper: React.FC = () => {
   const [imgSrc, setImgSrc] = useState('');
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -154,7 +150,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ onBack }) => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-8 text-white">Image Cropper</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

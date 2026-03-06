@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Tool } from '../types';
 import ToolCard from '../components/ToolCard';
-import { LockIcon, MagicWandIcon, AspectRatioIcon, TextIcon, CropIcon, FilmIcon, CompressIcon } from '../components/icons';
+import { LockIcon, MagicWandIcon, AspectRatioIcon, TextIcon, CropIcon, FilmIcon, CompressIcon, YoutubeIcon } from '../components/icons';
 
 const tools: Tool[] = [
   {
@@ -55,6 +55,13 @@ const tools: Tool[] = [
     icon: <CompressIcon />,
   },
   {
+    id: 'youtube-seo',
+    path: '/youtube-seo',
+    title: 'YouTube SEO Generator',
+    description: 'Generate optimized titles, descriptions, hashtags, and tags for your YouTube videos using AI.',
+    icon: <YoutubeIcon />,
+  },
+  {
     id: 'text-counter',
     path: '/text-counter',
     title: 'Word & Character Counter',
@@ -63,11 +70,7 @@ const tools: Tool[] = [
   },
 ];
 
-interface HomePageProps {
-  onSelectTool: (toolId: string) => void;
-}
-
-const HomePage: React.FC<HomePageProps> = ({ onSelectTool }) => {
+const HomePage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <header className="text-center mb-12">
@@ -76,7 +79,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSelectTool }) => {
       </header>
       <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {tools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} onSelectTool={onSelectTool} />
+          <ToolCard key={tool.id} tool={tool} />
         ))}
       </main>
     </div>

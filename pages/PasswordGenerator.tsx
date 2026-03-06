@@ -4,11 +4,7 @@ import BackButton from '../components/BackButton';
 
 type Strength = 'low' | 'medium' | 'high';
 
-interface PasswordGeneratorProps {
-    onBack: () => void;
-}
-
-const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
+const PasswordGenerator: React.FC = () => {
   const [length, setLength] = useState<number>(16);
   const [strength, setStrength] = useState<Strength>('medium');
   const [passwords, setPasswords] = useState<string[]>([]);
@@ -54,7 +50,7 @@ const PasswordGenerator: React.FC<PasswordGeneratorProps> = ({ onBack }) => {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-8 text-white">Random Password Generator</h1>
       
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-3 gap-8">

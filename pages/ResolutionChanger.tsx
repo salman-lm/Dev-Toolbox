@@ -10,11 +10,7 @@ const resolutions = [
   { name: 'Portrait (4:5)', w: 1080, h: 1350 },
 ];
 
-interface ResolutionChangerProps {
-    onBack: () => void;
-}
-
-const ResolutionChanger: React.FC<ResolutionChangerProps> = ({ onBack }) => {
+const ResolutionChanger: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [selectedRes, setSelectedRes] = useState<string>(resolutions[0].name);
@@ -96,7 +92,7 @@ const ResolutionChanger: React.FC<ResolutionChangerProps> = ({ onBack }) => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-8 text-white">Image Resolution Changer</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

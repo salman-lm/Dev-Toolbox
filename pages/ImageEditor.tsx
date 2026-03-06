@@ -11,11 +11,7 @@ interface Filters {
   hueRotate: number;
 }
 
-interface ImageEditorProps {
-    onBack: () => void;
-}
-
-const ImageEditor: React.FC<ImageEditorProps> = ({ onBack }) => {
+const ImageEditor: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [filters, setFilters] = useState<Filters>({
@@ -116,7 +112,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ onBack }) => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-8 text-white">Instant Image Editor</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

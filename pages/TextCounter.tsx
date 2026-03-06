@@ -2,11 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import BackButton from '../components/BackButton';
 
-interface TextCounterProps {
-    onBack: () => void;
-}
-
-const TextCounter: React.FC<TextCounterProps> = ({ onBack }) => {
+const TextCounter: React.FC = () => {
   const [text, setText] = useState<string>('');
 
   const stats = useMemo(() => {
@@ -33,7 +29,7 @@ const TextCounter: React.FC<TextCounterProps> = ({ onBack }) => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <BackButton onBack={onBack} />
+      <BackButton />
       <h1 className="text-4xl font-bold mb-2 text-white">Word & Character Counter</h1>
       <p className="text-gray-400 mb-8">Get instant text analysis as you type.</p>
 
