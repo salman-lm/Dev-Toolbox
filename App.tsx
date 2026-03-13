@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import PasswordGenerator from './pages/PasswordGenerator';
@@ -15,7 +15,7 @@ import YoutubeSeoGenerator from './pages/YoutubeSeoGenerator';
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -30,7 +30,7 @@ const App: React.FC = () => {
           <Route path="/youtube-seo" element={<YoutubeSeoGenerator />} />
         </Routes>
       </Layout>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
