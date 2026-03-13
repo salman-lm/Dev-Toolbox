@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import PasswordGenerator from './pages/PasswordGenerator';
 import ImageEditor from './pages/ImageEditor';
@@ -15,7 +16,7 @@ import YoutubeSeoGenerator from './pages/YoutubeSeoGenerator';
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <div className="min-h-screen">
+      <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/password-generator" element={<PasswordGenerator />} />
@@ -28,7 +29,7 @@ const App: React.FC = () => {
           <Route path="/image-size-changer" element={<ImageSizeChanger />} />
           <Route path="/youtube-seo" element={<YoutubeSeoGenerator />} />
         </Routes>
-      </div>
+      </Layout>
     </BrowserRouter>
   );
 };
